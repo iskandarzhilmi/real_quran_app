@@ -21,7 +21,7 @@ class QuranBloc extends Bloc<QuranEvent, QuranStateModel> {
         ),
       );
       QuranModel loadedQuran =
-          await QuranRemoteDataSource().getQuranPage(event.pageNumber);
+          await QuranRemoteDataSource().getQuranPageFromApi(event.pageNumber);
 
       emit(
         state.copyWith(

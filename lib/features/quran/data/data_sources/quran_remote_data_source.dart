@@ -5,7 +5,7 @@ import '../models/quran_model.dart';
 class QuranRemoteDataSource {
   QuranRemoteDataSource();
 
-  Future<QuranModel> getQuranPage(int pageNumber) async {
+  Future<QuranModel> getQuranPageFromApi(int pageNumber) async {
     Response response = await Dio()
         .get('https://salamquran.com/en/api/v6/page/wbw?index=$pageNumber');
 
