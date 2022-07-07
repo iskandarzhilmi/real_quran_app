@@ -14,18 +14,27 @@ class QuranBloc extends Bloc<QuranEvent, QuranStateModel> {
   }
 
   Future<void> _onQuranPagePicked(QuranPagePicked event, Emitter emit) async {
-    emit(state.copyWith(
-      quranState: QuranLoading(),
-    ));
+    try {
+      emit(
+        state.copyWith(
+          quranState: QuranLoading(),
+        ),
+      );
+      QuranModel loadedQuran =
+          await QuranRemoteDataSource().getQuranPage(event.pageNumber);
 
-    QuranModel loadedQuran =
-        await QuranRemoteDataSource().getQuranPage(event.pageNumber);
-
-    emit(
-      state.copyWith(
-        quranState: QuranLoaded(),
-        quran: loadedQuran,
-      ),
-    );
+      emit(
+        state.copyWith(
+          quranState: QuranLoaded(),
+          quran: loadedQuran,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          quranState: QuranError(errorMessage: e.toString()),
+        ),
+      );
+    }
   }
 }

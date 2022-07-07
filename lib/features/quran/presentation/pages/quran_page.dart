@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -24,52 +25,71 @@ class _QuranPageState extends State<QuranPage> {
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            Form(
-              child: Column(
-                children: [
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Page Number',
-                    ),
-                    keyboardType: TextInputType.number,
-                    
-                    onChanged: (value) {
-                      context.read<QuranBloc>().add(
-                            QuranPagePicked(pageNumber: int.parse(value)),
-                          );
-                    },
-                  ),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              Form(
+                child: Column(
+                  children: [
+                    CupertinoPicker(
+                        itemExtent: 32,
+                        scrollController:
+                            FixedExtentScrollController(initialItem: 0),
+                        onSelectedItemChanged: (int index) {
+                          context.read<QuranBloc>().add(
+                                QuranPagePicked(pageNumber: index + 1),
+                              );
+                        },
+                        children: List.generate(
+                          604,
+                          (index) => Text(
+                            '${index + 1}',
+                            style: GoogleFonts.roboto(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )),
+                  ],
+                ),
               ),
-            ),
-            BlocBuilder<QuranBloc, QuranStateModel>(builder: (context, state) {
-              if (state.quranState is QuranInitial) {
-                return Center(
-                  child: Column(
-                    children: const [
-                      Text('Please enter a page number'),
-                    ],
-                  ),
-                );
-              } else if (state.quranState is QuranLoading) {
-                return const CircularProgressIndicator();
-              } else if (state.quranState is QuranLoaded) {
-                return Text(
-                  state.quran!.pageText,
-                  style: GoogleFonts.scheherazadeNew(
-                    textStyle: const TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                );
-              } else if (state.quranState is QuranError) {
-                return const Text('QuranError');
-              }
-              return const Text('Unknown state');
-            }),
-          ],
+              Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: BlocBuilder<QuranBloc, QuranStateModel>(
+                    builder: (context, state) {
+                  if (state.quranState is QuranInitial) {
+                    return Center(
+                      child: Column(
+                        children: const [
+                          Text('Please enter a page number'),
+                        ],
+                      ),
+                    );
+                  } else if (state.quranState is QuranLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state.quranState is QuranLoaded) {
+                    return Text(
+                      state.quran!.pageText,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.scheherazadeNew(
+                        textStyle: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  } else if (state.quranState is QuranError) {
+                    return Text((state.quranState as QuranError).errorMessage);
+                  }
+                  return const Text('Unknown state');
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -37,6 +37,8 @@ class QuranModel {
         pageText = pageText + lineText;
       }
     }
+
+    print('pageText: $pageText');
     return QuranModel(
       pageText: pageText,
       pageNumber: pageNumber,
